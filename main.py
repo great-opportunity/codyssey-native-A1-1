@@ -72,6 +72,51 @@ prompts = [
 ]
 
 
+# ===== 전체 구조 (메뉴 화면 + 진입점) =====
+
+def show_menu():
+    """메인 메뉴를 출력한다."""
+    print("\n===== 프롬프트 매니저 =====")
+    print("1. 프롬프트 추가")
+    print("2. 프롬프트 목록 보기")
+    print("3. 카테고리별 조회")
+    print("4. 프롬프트 검색")
+    print("5. 프롬프트 상세 보기")
+    print("6. 즐겨찾기 추가/해제")
+    print("7. 즐겨찾기 목록 보기")
+    print("0. 종료")
+    print("===========================")
+
+
+def main():
+    """프로그램의 진입점. 메뉴를 반복 출력하며 사용자 입력을 처리한다."""
+    while True:
+        show_menu()
+        choice = input("메뉴 번호를 선택하세요: ").strip()
+
+        if choice == "1":
+            add_prompt()
+        elif choice == "2":
+            show_list()
+        elif choice == "3":
+            show_by_category()
+        elif choice == "4":
+            search_prompt()
+        elif choice == "5":
+            show_detail()
+        elif choice == "6":
+            toggle_favorite()
+        elif choice == "7":
+            show_favorites()
+        elif choice == "0":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("잘못된 번호입니다. 다시 입력해주세요.")
+
+
+# ===== 세부 기능 함수 =====
+
 def choose_category():
     """카테고리 목록을 보여주고, 번호 선택 또는 직접 입력 중 하나로 카테고리명을 반환한다."""
     print("카테고리를 선택하세요.")
@@ -149,47 +194,6 @@ def toggle_favorite():
 
 def show_favorites():
     print("[준비 중] 즐겨찾기 목록 보기 기능은 다음 커밋에서 구현됩니다.")
-
-
-def show_menu():
-    """메인 메뉴를 출력한다."""
-    print("\n===== 프롬프트 매니저 =====")
-    print("1. 프롬프트 추가")
-    print("2. 프롬프트 목록 보기")
-    print("3. 카테고리별 조회")
-    print("4. 프롬프트 검색")
-    print("5. 프롬프트 상세 보기")
-    print("6. 즐겨찾기 추가/해제")
-    print("7. 즐겨찾기 목록 보기")
-    print("0. 종료")
-    print("===========================")
-
-
-def main():
-    """프로그램의 진입점. 메뉴를 반복 출력하며 사용자 입력을 처리한다."""
-    while True:
-        show_menu()
-        choice = input("메뉴 번호를 선택하세요: ").strip()
-
-        if choice == "1":
-            add_prompt()
-        elif choice == "2":
-            show_list()
-        elif choice == "3":
-            show_by_category()
-        elif choice == "4":
-            search_prompt()
-        elif choice == "5":
-            show_detail()
-        elif choice == "6":
-            toggle_favorite()
-        elif choice == "7":
-            show_favorites()
-        elif choice == "0":
-            print("프로그램을 종료합니다.")
-            break
-        else:
-            print("잘못된 번호입니다. 다시 입력해주세요.")
 
 
 if __name__ == "__main__":
