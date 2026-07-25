@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editor / OS
+.vscode/
+.DS_Store
+
+# Claude Code local settings
+.claude/
+
+# Runtime data (bonus: JSON persistence output)
+data/prompts.json
