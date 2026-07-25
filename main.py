@@ -237,7 +237,25 @@ def show_detail():
 
 
 def toggle_favorite():
-    print("[준비 중] 즐겨찾기 추가/해제 기능은 다음 커밋에서 구현됩니다.")
+    """번호를 입력받아 해당 프롬프트의 즐겨찾기 상태를 반전(추가 ↔ 해제)시킨다."""
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    number = input("즐겨찾기를 변경할 프롬프트 번호: ").strip()
+    index = int(number) - 1 if number.isdigit() else -1
+
+    if not (0 <= index < len(prompts)):
+        print("잘못된 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    prompt["favorite"] = not prompt["favorite"]
+
+    if prompt["favorite"]:
+        print(f"\n'{prompt['title']}'을(를) 즐겨찾기에 추가했습니다. ⭐")
+    else:
+        print(f"\n'{prompt['title']}'을(를) 즐겨찾기에서 해제했습니다.")
 
 
 def show_favorites():
