@@ -180,18 +180,16 @@ def format_item(number, prompt, show_category=True):
 
 MENU_ITEMS = [
     "1. 프롬프트 목록 보기",
-    "2. 카테고리별 조회",
-    "3. 프롬프트 상세 보기",
+    "2. 프롬프트 상세 보기",
+    "3. 카테고리별 조회",
     "",
     "4. 프롬프트 추가",
     "5. 프롬프트 수정",
     "6. 프롬프트 삭제",
     "",
     "7. 프롬프트 검색",
-    "",
     "8. 즐겨찾기 목록 보기",
     "9. 즐겨찾기 추가/해제",
-    "",
     "10. 조회수 Top 목록",
     "",
     "11. 프롬프트 JSON으로 저장",
@@ -222,9 +220,9 @@ def main():
         if choice == "1":
             show_list()
         elif choice == "2":
-            show_by_category()
-        elif choice == "3":
             show_detail()
+        elif choice == "3":
+            show_by_category()
         elif choice == "4":
             add_prompt()
         elif choice == "5":
