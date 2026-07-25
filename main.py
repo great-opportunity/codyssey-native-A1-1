@@ -1,5 +1,7 @@
 """프롬프트 매니저 - 콘솔 기반 프롬프트 관리 프로그램"""
 
+import textwrap
+
 # 프롬프트가 속할 수 있는 카테고리 목록 (프롬프트 추가 시 이 목록에서 고르거나 직접 입력 가능)
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 
@@ -72,11 +74,63 @@ prompts = [
 ]
 
 
+# ===== 화면 출력 도우미 (ANSI 색상 / 구분선 / 줄바꿈) =====
+# 외부 라이브러리 없이, 터미널이 인식하는 ANSI 이스케이프 코드 문자열만 사용한다.
+
+LINE_WIDTH = 44
+
+COLOR_RESET = "\033[0m"
+COLOR_TITLE = "\033[1;36m"   # 굵은 청록색 - 메뉴/섹션 제목
+COLOR_CATEGORY = "\033[33m"  # 노란색 - 카테고리 태그
+COLOR_STAR = "\033[33m"      # 노란색 - 즐겨찾기 별
+COLOR_ERROR = "\033[31m"     # 빨간색 - 오류/결과 없음 안내
+COLOR_SUCCESS = "\033[32m"   # 초록색 - 성공 안내
+
+
+def print_divider():
+    """일관된 길이의 구분선을 출력한다."""
+    print(COLOR_TITLE + "=" * LINE_WIDTH + COLOR_RESET)
+
+
+def print_section(title):
+    """섹션(목록/검색결과 등) 제목을 색상과 함께 출력한다."""
+    print(f"\n{COLOR_TITLE}--- {title} ---{COLOR_RESET}")
+
+
+def print_error(message):
+    """오류/결과 없음 안내 메시지를 빨간색으로 출력한다."""
+    print(f"{COLOR_ERROR}{message}{COLOR_RESET}")
+
+
+def print_success(message):
+    """성공 안내 메시지를 초록색으로 출력한다."""
+    print(f"{COLOR_SUCCESS}{message}{COLOR_RESET}")
+
+
+def print_wrapped(text, width=LINE_WIDTH + 26):
+    """긴 텍스트를 원래 줄바꿈(문단 구분)은 유지하면서, 각 줄만 터미널 폭에 맞게 접어서 출력한다."""
+    for line in text.split("\n"):
+        if line.strip() == "":
+            print()
+        else:
+            print(textwrap.fill(line, width=width))
+
+
+def format_item(number, prompt, show_category=True):
+    """목록에 쓰이는 '번호. [카테고리] 제목 ⭐' 한 줄을 만든다."""
+    category_tag = f"{COLOR_CATEGORY}[{prompt['category']}]{COLOR_RESET} " if show_category else ""
+    star = f"{COLOR_STAR}⭐{COLOR_RESET}" if prompt["favorite"] else ""
+    return f"{number}. {category_tag}{prompt['title']} {star}"
+
+
 # ===== 전체 구조 (메뉴 화면 + 진입점) =====
 
 def show_menu():
     """메인 메뉴를 출력한다."""
-    print("\n===== 프롬프트 매니저 =====")
+    print()
+    print_divider()
+    print(f"{COLOR_TITLE}프롬프트 매니저{COLOR_RESET}")
+    print_divider()
     print("1. 프롬프트 추가")
     print("2. 프롬프트 목록 보기")
     print("3. 카테고리별 조회")
@@ -85,7 +139,7 @@ def show_menu():
     print("6. 즐겨찾기 추가/해제")
     print("7. 즐겨찾기 목록 보기")
     print("0. 종료")
-    print("===========================")
+    print_divider()
 
 
 def main():
@@ -109,10 +163,10 @@ def main():
         elif choice == "7":
             show_favorites()
         elif choice == "0":
-            print("프로그램을 종료합니다.")
+            print_success("프로그램을 종료합니다.")
             break
         else:
-            print("잘못된 번호입니다. 다시 입력해주세요.")
+            print_error("잘못된 번호입니다. 다시 입력해주세요.")
 
 
 # ===== 세부 기능 함수 =====
@@ -126,14 +180,14 @@ def choose_category():
 
     selection = input("카테고리 번호 또는 이름: ").strip()
     while not selection:
-        print("카테고리는 비어있을 수 없습니다. 다시 입력해주세요.")
+        print_error("카테고리는 비어있을 수 없습니다. 다시 입력해주세요.")
         selection = input("카테고리 번호 또는 이름: ").strip()
 
     if selection.isdigit():
         index = int(selection) - 1
         if 0 <= index < len(CATEGORIES):
             return CATEGORIES[index]
-        print("목록에 없는 번호라서, 입력하신 값을 그대로 카테고리명으로 사용합니다.")
+        print_error("목록에 없는 번호라서, 입력하신 값을 그대로 카테고리명으로 사용합니다.")
         return selection
 
     return selection
@@ -141,16 +195,16 @@ def choose_category():
 
 def add_prompt():
     """제목, 내용, 카테고리를 입력받아 새 프롬프트를 prompts 리스트에 추가한다."""
-    print("\n--- 새 프롬프트 추가 ---")
+    print_section("새 프롬프트 추가")
 
     title = input("제목: ").strip()
     while not title:
-        print("제목은 비어있을 수 없습니다. 다시 입력해주세요.")
+        print_error("제목은 비어있을 수 없습니다. 다시 입력해주세요.")
         title = input("제목: ").strip()
 
     content = input("내용: ").strip()
     while not content:
-        print("내용은 비어있을 수 없습니다. 다시 입력해주세요.")
+        print_error("내용은 비어있을 수 없습니다. 다시 입력해주세요.")
         content = input("내용: ").strip()
 
     category = choose_category()
@@ -161,19 +215,18 @@ def add_prompt():
         "category": category,
         "favorite": False,
     })
-    print(f"\n'{title}' 프롬프트가 추가되었습니다. (카테고리: {category})")
+    print_success(f"\n'{title}' 프롬프트가 추가되었습니다. (카테고리: {category})")
 
 
 def show_list():
     """저장된 모든 프롬프트를 번호, 제목, 카테고리, 즐겨찾기 여부와 함께 출력한다."""
     if not prompts:
-        print("등록된 프롬프트가 없습니다.")
+        print_error("등록된 프롬프트가 없습니다.")
         return
 
-    print("\n--- 프롬프트 목록 ---")
+    print_section("프롬프트 목록")
     for i, prompt in enumerate(prompts, start=1):
-        star = "⭐" if prompt["favorite"] else ""
-        print(f"{i}. [{prompt['category']}] {prompt['title']} {star}")
+        print(format_item(i, prompt))
 
 
 def show_by_category():
@@ -182,20 +235,19 @@ def show_by_category():
     matched = [(i, p) for i, p in enumerate(prompts, start=1) if p["category"] == category]
 
     if not matched:
-        print(f"\n'{category}' 카테고리에 등록된 프롬프트가 없습니다.")
+        print_error(f"'{category}' 카테고리에 등록된 프롬프트가 없습니다.")
         return
 
-    print(f"\n--- '{category}' 카테고리 프롬프트 ---")
+    print_section(f"'{category}' 카테고리 프롬프트")
     for i, prompt in matched:
-        star = "⭐" if prompt["favorite"] else ""
-        print(f"{i}. {prompt['title']} {star}")
+        print(format_item(i, prompt, show_category=False))
 
 
 def search_prompt():
     """키워드를 입력받아, 제목 또는 내용에 그 키워드가 포함된 프롬프트를 원래 번호와 함께 출력한다."""
     keyword = input("검색어를 입력하세요: ").strip()
     while not keyword:
-        print("검색어는 비어있을 수 없습니다. 다시 입력해주세요.")
+        print_error("검색어는 비어있을 수 없습니다. 다시 입력해주세요.")
         keyword = input("검색어를 입력하세요: ").strip()
 
     matched = [
@@ -204,58 +256,58 @@ def search_prompt():
     ]
 
     if not matched:
-        print(f"\n'{keyword}'에 대한 검색 결과가 없습니다.")
+        print_error(f"'{keyword}'에 대한 검색 결과가 없습니다.")
         return
 
-    print(f"\n--- '{keyword}' 검색 결과 ---")
+    print_section(f"'{keyword}' 검색 결과")
     for i, prompt in matched:
-        star = "⭐" if prompt["favorite"] else ""
-        print(f"{i}. [{prompt['category']}] {prompt['title']} {star}")
+        print(format_item(i, prompt))
 
 
 def show_detail():
     """번호를 입력받아 해당 프롬프트의 제목, 카테고리, 즐겨찾기 여부, 내용 전체를 출력한다."""
     if not prompts:
-        print("등록된 프롬프트가 없습니다.")
+        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("상세히 볼 프롬프트 번호: ").strip()
     index = int(number) - 1 if number.isdigit() else -1
 
     if not (0 <= index < len(prompts)):
-        print("잘못된 번호입니다.")
+        print_error("잘못된 번호입니다.")
         return
 
     prompt = prompts[index]
-    star = "⭐ 즐겨찾기 됨" if prompt["favorite"] else "즐겨찾기 안 됨"
+    star = f"{COLOR_STAR}⭐ 즐겨찾기 됨{COLOR_RESET}" if prompt["favorite"] else "즐겨찾기 안 됨"
 
-    print(f"\n--- {number}번 프롬프트 상세 ---")
-    print(f"제목: {prompt['title']}")
-    print(f"카테고리: {prompt['category']}")
-    print(f"즐겨찾기: {star}")
-    print(f"내용:\n{prompt['content']}")
+    print_section(f"{number}번 프롬프트 상세")
+    print(f"{COLOR_TITLE}제목{COLOR_RESET}: {prompt['title']}")
+    print(f"{COLOR_TITLE}카테고리{COLOR_RESET}: {COLOR_CATEGORY}{prompt['category']}{COLOR_RESET}")
+    print(f"{COLOR_TITLE}즐겨찾기{COLOR_RESET}: {star}")
+    print(f"{COLOR_TITLE}내용{COLOR_RESET}:")
+    print_wrapped(prompt["content"])
 
 
 def toggle_favorite():
     """번호를 입력받아 해당 프롬프트의 즐겨찾기 상태를 반전(추가 ↔ 해제)시킨다."""
     if not prompts:
-        print("등록된 프롬프트가 없습니다.")
+        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("즐겨찾기를 변경할 프롬프트 번호: ").strip()
     index = int(number) - 1 if number.isdigit() else -1
 
     if not (0 <= index < len(prompts)):
-        print("잘못된 번호입니다.")
+        print_error("잘못된 번호입니다.")
         return
 
     prompt = prompts[index]
     prompt["favorite"] = not prompt["favorite"]
 
     if prompt["favorite"]:
-        print(f"\n'{prompt['title']}'을(를) 즐겨찾기에 추가했습니다. ⭐")
+        print_success(f"'{prompt['title']}'을(를) 즐겨찾기에 추가했습니다. ⭐")
     else:
-        print(f"\n'{prompt['title']}'을(를) 즐겨찾기에서 해제했습니다.")
+        print(f"'{prompt['title']}'을(를) 즐겨찾기에서 해제했습니다.")
 
 
 def show_favorites():
@@ -263,12 +315,12 @@ def show_favorites():
     matched = [(i, p) for i, p in enumerate(prompts, start=1) if p["favorite"]]
 
     if not matched:
-        print("즐겨찾기한 프롬프트가 없습니다.")
+        print_error("즐겨찾기한 프롬프트가 없습니다.")
         return
 
-    print("\n--- 즐겨찾기 목록 ---")
+    print_section("즐겨찾기 목록")
     for i, prompt in matched:
-        print(f"{i}. [{prompt['category']}] {prompt['title']} ⭐")
+        print(format_item(i, prompt))
 
 
 if __name__ == "__main__":
