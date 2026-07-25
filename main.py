@@ -5,11 +5,6 @@ import os
 import textwrap
 import unicodedata
 
-try:
-    import readline  # 표준 라이브러리. Windows에는 기본 내장되어 있지 않을 수 있다.
-except ImportError:
-    readline = None
-
 # 보너스 기능(JSON 저장/불러오기, Markdown 내보내기)에서 사용하는 경로
 DATA_DIR = "data"
 JSON_PATH = os.path.join(DATA_DIR, "prompts.json")
@@ -152,24 +147,14 @@ def print_wrapped(text, width=LINE_WIDTH + 26):
             print(textwrap.fill(line, width=width))
 
 
-def input_prefilled(prompt, prefill):
-    """기존 값을 입력창에 미리 채워서, 에디터처럼 바로 고쳐 쓸 수 있게 한다.
-    readline이 없는 환경(Windows 등)에서는 일반 input()으로 자동 대체되고,
-    입력을 비운 채 엔터만 치면 두 경우 모두 기존 값을 그대로 유지한다."""
-    if readline is not None:
-        def _prefill():
-            readline.insert_text(prefill)
-            readline.redisplay()  # macOS는 readline이 libedit이라, redisplay를 직접 불러야 화면에 보인다
+def input_prefilled(prompt, prefill, preview_length=40):
+    """현재 값을 안내하며 입력받는다. 빈 입력(엔터만)이면 기존 값을 그대로 유지한다.
+    안내에 보여주는 미리보기만 줄바꿈 제거 + 길이 제한하고, 실제로 유지되는 값은 원본 그대로다."""
+    preview = prefill.replace("\n", " ")
+    if len(preview) > preview_length:
+        preview = preview[:preview_length] + "..."
 
-        readline.set_pre_input_hook(_prefill)
-        try:
-            result = input(prompt)
-        finally:
-            readline.set_pre_input_hook()
-    else:
-        result = input(f"{prompt}(현재: {prefill}, 엔터만 누르면 유지) ")
-
-    result = result.strip()
+    result = input(f"{prompt}(현재: {preview}, 엔터만 누르면 유지) ").strip()
     return result if result else prefill
 
 
@@ -483,7 +468,7 @@ def edit_prompt():
         return
 
     prompt = prompts[index]
-    print_section(f"{number}번 프롬프트 수정 (기존 내용이 채워져 있습니다. 그대로 편집 후 엔터)")
+    print_section(f"{number}번 프롬프트 수정 (엔터만 누르면 현재 값 유지)")
 
     prompt["title"] = input_prefilled("제목: ", prompt["title"])
     prompt["content"] = input_prefilled("내용: ", prompt["content"])
