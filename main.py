@@ -177,7 +177,18 @@ def show_list():
 
 
 def show_by_category():
-    print("[준비 중] 카테고리별 조회 기능은 다음 커밋에서 구현됩니다.")
+    """카테고리를 선택받아, 해당 카테고리에 속한 프롬프트만 원래 번호와 함께 출력한다."""
+    category = choose_category()
+    matched = [(i, p) for i, p in enumerate(prompts, start=1) if p["category"] == category]
+
+    if not matched:
+        print(f"\n'{category}' 카테고리에 등록된 프롬프트가 없습니다.")
+        return
+
+    print(f"\n--- '{category}' 카테고리 프롬프트 ---")
+    for i, prompt in matched:
+        star = "⭐" if prompt["favorite"] else ""
+        print(f"{i}. {prompt['title']} {star}")
 
 
 def search_prompt():
