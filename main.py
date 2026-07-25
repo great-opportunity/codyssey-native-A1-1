@@ -1,6 +1,7 @@
 """프롬프트 매니저 - 콘솔 기반 프롬프트 관리 프로그램"""
 
 import textwrap
+import unicodedata
 
 # 프롬프트가 속할 수 있는 카테고리 목록 (프롬프트 추가 시 이 목록에서 고르거나 직접 입력 가능)
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
@@ -87,14 +88,38 @@ COLOR_ERROR = "\033[31m"     # 빨간색 - 오류/결과 없음 안내
 COLOR_SUCCESS = "\033[32m"   # 초록색 - 성공 안내
 
 
+def display_width(text):
+    """터미널에 실제로 찍히는 너비를 계산한다. 한글 등 동아시아 문자는 폭이 2칸이다."""
+    width = 0
+    for char in text:
+        width += 2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+    return width
+
+
+def print_box_border(left, fill, right):
+    print(COLOR_TITLE + left + fill * LINE_WIDTH + right + COLOR_RESET)
+
+
+def print_box_line(text, center=False):
+    """상자 안에 한 줄을 출력한다. 한글 너비를 고려해 오른쪽 테두리가 어긋나지 않게 맞춘다."""
+    padding = LINE_WIDTH - display_width(text)
+    if center:
+        left_pad = padding // 2
+        right_pad = padding - left_pad
+        content = " " * left_pad + text + " " * right_pad
+    else:
+        content = " " + text + " " * (padding - 1)
+    print(f"{COLOR_TITLE}│{COLOR_RESET}{content}{COLOR_TITLE}│{COLOR_RESET}")
+
+
 def print_divider():
     """일관된 길이의 구분선을 출력한다."""
-    print(COLOR_TITLE + "=" * LINE_WIDTH + COLOR_RESET)
+    print(COLOR_TITLE + "─" * (LINE_WIDTH + 2) + COLOR_RESET)
 
 
 def print_section(title):
     """섹션(목록/검색결과 등) 제목을 색상과 함께 출력한다."""
-    print(f"\n{COLOR_TITLE}--- {title} ---{COLOR_RESET}")
+    print(f"\n{COLOR_TITLE}▸ {title}{COLOR_RESET}")
 
 
 def print_error(message):
@@ -125,21 +150,27 @@ def format_item(number, prompt, show_category=True):
 
 # ===== 전체 구조 (메뉴 화면 + 진입점) =====
 
+MENU_ITEMS = [
+    "1. 프롬프트 추가",
+    "2. 프롬프트 목록 보기",
+    "3. 카테고리별 조회",
+    "4. 프롬프트 검색",
+    "5. 프롬프트 상세 보기",
+    "6. 즐겨찾기 추가/해제",
+    "7. 즐겨찾기 목록 보기",
+    "0. 종료",
+]
+
+
 def show_menu():
-    """메인 메뉴를 출력한다."""
+    """메인 메뉴를 상자 테두리와 함께 출력한다."""
     print()
-    print_divider()
-    print(f"{COLOR_TITLE}프롬프트 매니저{COLOR_RESET}")
-    print_divider()
-    print("1. 프롬프트 추가")
-    print("2. 프롬프트 목록 보기")
-    print("3. 카테고리별 조회")
-    print("4. 프롬프트 검색")
-    print("5. 프롬프트 상세 보기")
-    print("6. 즐겨찾기 추가/해제")
-    print("7. 즐겨찾기 목록 보기")
-    print("0. 종료")
-    print_divider()
+    print_box_border("┌", "─", "┐")
+    print_box_line("✨ 프롬프트 매니저 ✨", center=True)
+    print_box_border("├", "─", "┤")
+    for item in MENU_ITEMS:
+        print_box_line(item)
+    print_box_border("└", "─", "┘")
 
 
 def main():
