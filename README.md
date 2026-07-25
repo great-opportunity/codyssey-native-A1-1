@@ -72,6 +72,10 @@ python3 main.py
 
 ## 실행 화면
 
+**프롬프트 추가 (메뉴 4)**
+
+![프롬프트 추가](screenshot/08-add-prompt.png)
+
 **프롬프트 검색 (메뉴 7)**
 
 ![프롬프트 검색](screenshot/04-search.png)
