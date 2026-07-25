@@ -5,6 +5,11 @@ import os
 import textwrap
 import unicodedata
 
+try:
+    import readline  # 표준 라이브러리. Windows에는 기본 내장되어 있지 않을 수 있다.
+except ImportError:
+    readline = None
+
 # 보너스 기능(JSON 저장/불러오기, Markdown 내보내기)에서 사용하는 경로
 DATA_DIR = "data"
 JSON_PATH = os.path.join(DATA_DIR, "prompts.json")
@@ -145,6 +150,23 @@ def print_wrapped(text, width=LINE_WIDTH + 26):
             print()
         else:
             print(textwrap.fill(line, width=width))
+
+
+def input_prefilled(prompt, prefill):
+    """기존 값을 입력창에 미리 채워서, 에디터처럼 바로 고쳐 쓸 수 있게 한다.
+    readline이 없는 환경(Windows 등)에서는 일반 input()으로 자동 대체되고,
+    입력을 비운 채 엔터만 치면 두 경우 모두 기존 값을 그대로 유지한다."""
+    if readline is not None:
+        readline.set_startup_hook(lambda: readline.insert_text(prefill))
+        try:
+            result = input(prompt)
+        finally:
+            readline.set_startup_hook()
+    else:
+        result = input(f"{prompt}(현재: {prefill}, 엔터만 누르면 유지) ")
+
+    result = result.strip()
+    return result if result else prefill
 
 
 def format_item(number, prompt, show_category=True):
@@ -381,7 +403,7 @@ def show_favorites():
         print(format_item(i, prompt))
 
 
-# ===== 보너스: 영속화(JSON) & 내보내기(Markdown) =====
+# ===== 보너스1: 영속화(JSON) & 내보내기(Markdown) =====
 
 def save_to_json():
     """현재 prompts 리스트를 JSON 파일로 저장한다."""
@@ -437,7 +459,7 @@ def export_to_markdown():
         print(f"  - {path}")
 
 
-# ===== 보너스: 수정/삭제(CRUD) & 조회수 =====
+# ===== 보너스2: 수정/삭제(CRUD) & 조회수 =====
 
 def edit_prompt():
     """번호를 입력받아 제목/내용/카테고리를 수정한다. 엔터만 누르면 기존 값을 유지한다."""
@@ -453,19 +475,11 @@ def edit_prompt():
         return
 
     prompt = prompts[index]
-    print_section(f"{number}번 프롬프트 수정 (엔터만 누르면 기존 값 유지)")
+    print_section(f"{number}번 프롬프트 수정 (기존 내용이 채워져 있습니다. 그대로 편집 후 엔터)")
 
-    new_title = input(f"제목 (현재: {prompt['title']}): ").strip()
-    if new_title:
-        prompt["title"] = new_title
-
-    new_content = input("내용 (현재 내용 유지하려면 엔터): ").strip()
-    if new_content:
-        prompt["content"] = new_content
-
-    new_category = input(f"카테고리 (현재: {prompt['category']}): ").strip()
-    if new_category:
-        prompt["category"] = new_category
+    prompt["title"] = input_prefilled("제목: ", prompt["title"])
+    prompt["content"] = input_prefilled("내용: ", prompt["content"])
+    prompt["category"] = input_prefilled("카테고리: ", prompt["category"])
 
     print_success(f"{number}번 프롬프트를 수정했습니다.")
 
