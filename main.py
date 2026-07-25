@@ -344,8 +344,8 @@ def search_prompt():
 
 def show_detail():
     """번호를 입력받아 해당 프롬프트의 제목, 카테고리, 즐겨찾기 여부, 내용 전체를 출력한다."""
+    show_list()
     if not prompts:
-        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("상세히 볼 프롬프트 번호: ").strip()
@@ -370,8 +370,8 @@ def show_detail():
 
 def toggle_favorite():
     """번호를 입력받아 해당 프롬프트의 즐겨찾기 상태를 반전(추가 ↔ 해제)시킨다."""
+    show_list()
     if not prompts:
-        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("즐겨찾기를 변경할 프롬프트 번호: ").strip()
@@ -463,8 +463,8 @@ def export_to_markdown():
 
 def edit_prompt():
     """번호를 입력받아 제목/내용/카테고리를 수정한다. 엔터만 누르면 기존 값을 유지한다."""
+    show_list()
     if not prompts:
-        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("수정할 프롬프트 번호: ").strip()
@@ -486,8 +486,8 @@ def edit_prompt():
 
 def delete_prompt():
     """번호를 입력받아 확인 후 해당 프롬프트를 삭제한다."""
+    show_list()
     if not prompts:
-        print_error("등록된 프롬프트가 없습니다.")
         return
 
     number = input("삭제할 프롬프트 번호: ").strip()
