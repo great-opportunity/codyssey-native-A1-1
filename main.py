@@ -86,8 +86,51 @@ def show_menu():
     print("===========================")
 
 
+def choose_category():
+    """카테고리 목록을 보여주고, 번호 선택 또는 직접 입력 중 하나로 카테고리명을 반환한다."""
+    print("카테고리를 선택하세요.")
+    for i, category in enumerate(CATEGORIES, start=1):
+        print(f"{i}. {category}")
+    print("목록에 없으면 원하는 카테고리명을 직접 입력하세요.")
+
+    selection = input("카테고리 번호 또는 이름: ").strip()
+    while not selection:
+        print("카테고리는 비어있을 수 없습니다. 다시 입력해주세요.")
+        selection = input("카테고리 번호 또는 이름: ").strip()
+
+    if selection.isdigit():
+        index = int(selection) - 1
+        if 0 <= index < len(CATEGORIES):
+            return CATEGORIES[index]
+        print("목록에 없는 번호라서, 입력하신 값을 그대로 카테고리명으로 사용합니다.")
+        return selection
+
+    return selection
+
+
 def add_prompt():
-    print("[준비 중] 프롬프트 추가 기능은 다음 커밋에서 구현됩니다.")
+    """제목, 내용, 카테고리를 입력받아 새 프롬프트를 prompts 리스트에 추가한다."""
+    print("\n--- 새 프롬프트 추가 ---")
+
+    title = input("제목: ").strip()
+    while not title:
+        print("제목은 비어있을 수 없습니다. 다시 입력해주세요.")
+        title = input("제목: ").strip()
+
+    content = input("내용: ").strip()
+    while not content:
+        print("내용은 비어있을 수 없습니다. 다시 입력해주세요.")
+        content = input("내용: ").strip()
+
+    category = choose_category()
+
+    prompts.append({
+        "title": title,
+        "content": content,
+        "category": category,
+        "favorite": False,
+    })
+    print(f"\n'{title}' 프롬프트가 추가되었습니다. (카테고리: {category})")
 
 
 def show_list():
