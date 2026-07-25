@@ -179,19 +179,25 @@ def format_item(number, prompt, show_category=True):
 # ===== 전체 구조 (메뉴 화면 + 진입점) =====
 
 MENU_ITEMS = [
-    "1. 프롬프트 추가",
-    "2. 프롬프트 목록 보기",
-    "3. 카테고리별 조회",
-    "4. 프롬프트 검색",
-    "5. 프롬프트 상세 보기",
-    "6. 즐겨찾기 추가/해제",
-    "7. 즐겨찾기 목록 보기",
-    "8. 프롬프트 JSON으로 저장",
-    "9. JSON에서 프롬프트 불러오기",
-    "10. 카테고리별 Markdown으로 내보내기",
-    "11. 프롬프트 수정",
-    "12. 프롬프트 삭제",
-    "13. 조회수 Top 목록",
+    "1. 프롬프트 목록 보기",
+    "2. 카테고리별 조회",
+    "3. 프롬프트 상세 보기",
+    "",
+    "4. 프롬프트 추가",
+    "5. 프롬프트 수정",
+    "6. 프롬프트 삭제",
+    "",
+    "7. 프롬프트 검색",
+    "",
+    "8. 즐겨찾기 목록 보기",
+    "9. 즐겨찾기 추가/해제",
+    "",
+    "10. 조회수 Top 목록",
+    "",
+    "11. 프롬프트 JSON으로 저장",
+    "12. JSON에서 프롬프트 불러오기",
+    "13. 카테고리별 Markdown으로 내보내기",
+    "",
     "0. 종료",
 ]
 
@@ -214,31 +220,31 @@ def main():
         choice = input("메뉴 번호를 선택하세요: ").strip()
 
         if choice == "1":
-            add_prompt()
-        elif choice == "2":
             show_list()
-        elif choice == "3":
+        elif choice == "2":
             show_by_category()
-        elif choice == "4":
-            search_prompt()
-        elif choice == "5":
+        elif choice == "3":
             show_detail()
-        elif choice == "6":
-            toggle_favorite()
-        elif choice == "7":
-            show_favorites()
-        elif choice == "8":
-            save_to_json()
-        elif choice == "9":
-            load_from_json()
-        elif choice == "10":
-            export_to_markdown()
-        elif choice == "11":
+        elif choice == "4":
+            add_prompt()
+        elif choice == "5":
             edit_prompt()
-        elif choice == "12":
+        elif choice == "6":
             delete_prompt()
-        elif choice == "13":
+        elif choice == "7":
+            search_prompt()
+        elif choice == "8":
+            show_favorites()
+        elif choice == "9":
+            toggle_favorite()
+        elif choice == "10":
             show_top_viewed()
+        elif choice == "11":
+            save_to_json()
+        elif choice == "12":
+            load_from_json()
+        elif choice == "13":
+            export_to_markdown()
         elif choice == "0":
             print_success("프로그램을 종료합니다.")
             break
@@ -418,7 +424,7 @@ def load_from_json():
     global prompts
 
     if not os.path.exists(JSON_PATH):
-        print_error(f"'{JSON_PATH}' 파일이 없습니다. 먼저 8번으로 저장해주세요.")
+        print_error(f"'{JSON_PATH}' 파일이 없습니다. 먼저 11번으로 저장해주세요.")
         return
 
     with open(JSON_PATH, "r", encoding="utf-8") as f:
