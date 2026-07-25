@@ -192,7 +192,25 @@ def show_by_category():
 
 
 def search_prompt():
-    print("[준비 중] 프롬프트 검색 기능은 다음 커밋에서 구현됩니다.")
+    """키워드를 입력받아, 제목 또는 내용에 그 키워드가 포함된 프롬프트를 원래 번호와 함께 출력한다."""
+    keyword = input("검색어를 입력하세요: ").strip()
+    while not keyword:
+        print("검색어는 비어있을 수 없습니다. 다시 입력해주세요.")
+        keyword = input("검색어를 입력하세요: ").strip()
+
+    matched = [
+        (i, p) for i, p in enumerate(prompts, start=1)
+        if keyword.lower() in p["title"].lower() or keyword.lower() in p["content"].lower()
+    ]
+
+    if not matched:
+        print(f"\n'{keyword}'에 대한 검색 결과가 없습니다.")
+        return
+
+    print(f"\n--- '{keyword}' 검색 결과 ---")
+    for i, prompt in matched:
+        star = "⭐" if prompt["favorite"] else ""
+        print(f"{i}. [{prompt['category']}] {prompt['title']} {star}")
 
 
 def show_detail():
