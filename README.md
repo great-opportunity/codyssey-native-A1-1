@@ -2,6 +2,8 @@
 
 GenAI 미션들에서 쌓인 프롬프트를 한곳에서 등록·검색·즐겨찾기·관리할 수 있는 터미널 기반 콘솔 프로그램입니다. 메뉴 번호를 입력해 기능을 선택하는 방식으로 동작합니다.
 
+![메뉴 화면과 프롬프트 목록](screenshot/03-menu-and-list.png)
+
 ## 실행 방법
 
 ```bash
@@ -67,3 +69,33 @@ python3 main.py
 
 - 프로그램 실행 중에 추가한 프롬프트와 즐겨찾기 상태는 메모리에 유지되며, **프로그램을 종료하면 초기화**됩니다.
 - 다음 실행에도 데이터를 이어가고 싶다면, 종료 전에 메뉴 11(JSON 저장)로 저장해두고, 다시 실행한 뒤 메뉴 12(JSON 불러오기)로 불러오면 됩니다. 자동 저장/불러오기는 아닙니다.
+
+## 실행 화면
+
+**프롬프트 검색 (메뉴 7)**
+
+![프롬프트 검색](screenshot/04-search.png)
+
+**프롬프트 수정 (메뉴 5)**
+
+![프롬프트 수정](screenshot/05-edit-prompt.png)
+
+**조회수 Top 목록 (메뉴 10)**
+
+![조회수 Top 목록](screenshot/06-top-viewed.png)
+
+## 개발 환경
+
+**VSCode + Python 3.12 + GitHub 계정 연동**
+
+![개발 환경](screenshot/01-dev-env-vscode-python-github.png)
+
+**Git 버전 및 사용자 설정**
+
+![Git 설정](screenshot/02-git-config.png)
+
+## 커밋 히스토리
+
+`git log --oneline --graph` 결과입니다. `feature/show-list` 브랜치를 만들어 목록 보기 기능을 작업한 뒤 `main`에 병합한 기록이 남아 있습니다.
+
+![커밋 그래프](screenshot/07-git-log-graph.png)
