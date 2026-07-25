@@ -134,7 +134,15 @@ def add_prompt():
 
 
 def show_list():
-    print("[준비 중] 프롬프트 목록 보기 기능은 다음 커밋에서 구현됩니다.")
+    """저장된 모든 프롬프트를 번호, 제목, 카테고리, 즐겨찾기 여부와 함께 출력한다."""
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    print("\n--- 프롬프트 목록 ---")
+    for i, prompt in enumerate(prompts, start=1):
+        star = "⭐" if prompt["favorite"] else ""
+        print(f"{i}. [{prompt['category']}] {prompt['title']} {star}")
 
 
 def show_by_category():
