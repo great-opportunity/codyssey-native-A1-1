@@ -161,11 +161,11 @@ def input_prefilled(prompt, prefill):
             readline.insert_text(prefill)
             readline.redisplay()  # macOS는 readline이 libedit이라, redisplay를 직접 불러야 화면에 보인다
 
-        readline.set_startup_hook(_prefill)
+        readline.set_pre_input_hook(_prefill)
         try:
             result = input(prompt)
         finally:
-            readline.set_startup_hook()
+            readline.set_pre_input_hook()
     else:
         result = input(f"{prompt}(현재: {prefill}, 엔터만 누르면 유지) ")
 
