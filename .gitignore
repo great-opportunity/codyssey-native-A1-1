@@ -11,5 +11,6 @@ venv/
 # Claude Code local settings
 .claude/
 
-# Runtime data (bonus: JSON persistence output)
+# Runtime data (bonus: JSON persistence / Markdown export output)
 data/prompts.json
+exports/

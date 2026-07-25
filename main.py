@@ -1,7 +1,14 @@
 """프롬프트 매니저 - 콘솔 기반 프롬프트 관리 프로그램"""
 
+import json
+import os
 import textwrap
 import unicodedata
+
+# 보너스 기능(JSON 저장/불러오기, Markdown 내보내기)에서 사용하는 경로
+DATA_DIR = "data"
+JSON_PATH = os.path.join(DATA_DIR, "prompts.json")
+EXPORT_DIR = "exports"
 
 # 프롬프트가 속할 수 있는 카테고리 목록 (프롬프트 추가 시 이 목록에서 고르거나 직접 입력 가능)
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
@@ -158,6 +165,9 @@ MENU_ITEMS = [
     "5. 프롬프트 상세 보기",
     "6. 즐겨찾기 추가/해제",
     "7. 즐겨찾기 목록 보기",
+    "8. 프롬프트 JSON으로 저장",
+    "9. JSON에서 프롬프트 불러오기",
+    "10. 카테고리별 Markdown으로 내보내기",
     "0. 종료",
 ]
 
@@ -193,6 +203,12 @@ def main():
             toggle_favorite()
         elif choice == "7":
             show_favorites()
+        elif choice == "8":
+            save_to_json()
+        elif choice == "9":
+            load_from_json()
+        elif choice == "10":
+            export_to_markdown()
         elif choice == "0":
             print_success("프로그램을 종료합니다.")
             break
@@ -352,6 +368,62 @@ def show_favorites():
     print_section("즐겨찾기 목록")
     for i, prompt in matched:
         print(format_item(i, prompt))
+
+
+# ===== 보너스: 영속화(JSON) & 내보내기(Markdown) =====
+
+def save_to_json():
+    """현재 prompts 리스트를 JSON 파일로 저장한다."""
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(prompts, f, ensure_ascii=False, indent=2)
+    print_success(f"{len(prompts)}개의 프롬프트를 '{JSON_PATH}'에 저장했습니다.")
+
+
+def load_from_json():
+    """JSON 파일에서 프롬프트를 불러와 현재 prompts 리스트를 통째로 교체한다."""
+    global prompts
+
+    if not os.path.exists(JSON_PATH):
+        print_error(f"'{JSON_PATH}' 파일이 없습니다. 먼저 8번으로 저장해주세요.")
+        return
+
+    with open(JSON_PATH, "r", encoding="utf-8") as f:
+        prompts = json.load(f)
+
+    print_success(f"'{JSON_PATH}'에서 {len(prompts)}개의 프롬프트를 불러왔습니다.")
+
+
+def export_to_markdown():
+    """전체 프롬프트를 카테고리별로 묶어, 카테고리마다 별도의 Markdown 파일로 내보낸다."""
+    if not prompts:
+        print_error("내보낼 프롬프트가 없습니다.")
+        return
+
+    grouped = {}
+    for prompt in prompts:
+        grouped.setdefault(prompt["category"], []).append(prompt)
+
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    exported_paths = []
+
+    for category, items in grouped.items():
+        safe_name = category.replace("/", "_")
+        filepath = os.path.join(EXPORT_DIR, f"{safe_name}.md")
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(f"# {category}\n\n")
+            for prompt in items:
+                star = " ⭐" if prompt["favorite"] else ""
+                f.write(f"## {prompt['title']}{star}\n\n")
+                f.write(f"{prompt['content']}\n\n")
+                f.write("---\n\n")
+
+        exported_paths.append(filepath)
+
+    print_success(f"{len(exported_paths)}개 카테고리를 '{EXPORT_DIR}/' 폴더에 Markdown으로 내보냈습니다.")
+    for path in exported_paths:
+        print(f"  - {path}")
 
 
 if __name__ == "__main__":
