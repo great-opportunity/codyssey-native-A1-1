@@ -259,7 +259,16 @@ def toggle_favorite():
 
 
 def show_favorites():
-    print("[준비 중] 즐겨찾기 목록 보기 기능은 다음 커밋에서 구현됩니다.")
+    """즐겨찾기로 표시된 프롬프트만 원래 번호와 함께 모아서 출력한다."""
+    matched = [(i, p) for i, p in enumerate(prompts, start=1) if p["favorite"]]
+
+    if not matched:
+        print("즐겨찾기한 프롬프트가 없습니다.")
+        return
+
+    print("\n--- 즐겨찾기 목록 ---")
+    for i, prompt in matched:
+        print(f"{i}. [{prompt['category']}] {prompt['title']} ⭐")
 
 
 if __name__ == "__main__":
