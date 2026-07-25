@@ -157,7 +157,11 @@ def input_prefilled(prompt, prefill):
     readline이 없는 환경(Windows 등)에서는 일반 input()으로 자동 대체되고,
     입력을 비운 채 엔터만 치면 두 경우 모두 기존 값을 그대로 유지한다."""
     if readline is not None:
-        readline.set_startup_hook(lambda: readline.insert_text(prefill))
+        def _prefill():
+            readline.insert_text(prefill)
+            readline.redisplay()  # macOS는 readline이 libedit이라, redisplay를 직접 불러야 화면에 보인다
+
+        readline.set_startup_hook(_prefill)
         try:
             result = input(prompt)
         finally:
