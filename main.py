@@ -196,7 +196,26 @@ def search_prompt():
 
 
 def show_detail():
-    print("[준비 중] 프롬프트 상세 보기 기능은 다음 커밋에서 구현됩니다.")
+    """번호를 입력받아 해당 프롬프트의 제목, 카테고리, 즐겨찾기 여부, 내용 전체를 출력한다."""
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    number = input("상세히 볼 프롬프트 번호: ").strip()
+    index = int(number) - 1 if number.isdigit() else -1
+
+    if not (0 <= index < len(prompts)):
+        print("잘못된 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    star = "⭐ 즐겨찾기 됨" if prompt["favorite"] else "즐겨찾기 안 됨"
+
+    print(f"\n--- {number}번 프롬프트 상세 ---")
+    print(f"제목: {prompt['title']}")
+    print(f"카테고리: {prompt['category']}")
+    print(f"즐겨찾기: {star}")
+    print(f"내용:\n{prompt['content']}")
 
 
 def toggle_favorite():
