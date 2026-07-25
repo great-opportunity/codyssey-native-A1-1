@@ -119,11 +119,6 @@ def print_box_line(text, center=False):
     print(f"{COLOR_TITLE}│{COLOR_RESET}{content}{COLOR_TITLE}│{COLOR_RESET}")
 
 
-def print_divider():
-    """일관된 길이의 구분선을 출력한다."""
-    print(COLOR_TITLE + "─" * (LINE_WIDTH + 2) + COLOR_RESET)
-
-
 def print_section(title):
     """섹션(목록/검색결과 등) 제목을 색상과 함께 출력한다."""
     print(f"\n{COLOR_TITLE}▸ {title}{COLOR_RESET}")
