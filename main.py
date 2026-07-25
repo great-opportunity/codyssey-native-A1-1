@@ -48,6 +48,7 @@ prompts = [
         ),
         "category": "텍스트 생성",
         "favorite": False,
+        "views": 0,
     },
     {
         "title": "제품 상세페이지 배경 제거 이미지 생성",
@@ -58,6 +59,7 @@ prompts = [
         ),
         "category": "이미지 생성",
         "favorite": True,
+        "views": 0,
     },
     {
         "title": "친절한 IT 헬프데스크 상담원 페르소나",
@@ -68,6 +70,7 @@ prompts = [
         ),
         "category": "페르소나",
         "favorite": False,
+        "views": 0,
     },
     {
         "title": "노코드 자동화 시나리오 설계 도우미",
@@ -78,6 +81,7 @@ prompts = [
         ),
         "category": "자동화",
         "favorite": False,
+        "views": 0,
     },
 ]
 
@@ -163,6 +167,9 @@ MENU_ITEMS = [
     "8. 프롬프트 JSON으로 저장",
     "9. JSON에서 프롬프트 불러오기",
     "10. 카테고리별 Markdown으로 내보내기",
+    "11. 프롬프트 수정",
+    "12. 프롬프트 삭제",
+    "13. 조회수 Top 목록",
     "0. 종료",
 ]
 
@@ -204,6 +211,12 @@ def main():
             load_from_json()
         elif choice == "10":
             export_to_markdown()
+        elif choice == "11":
+            edit_prompt()
+        elif choice == "12":
+            delete_prompt()
+        elif choice == "13":
+            show_top_viewed()
         elif choice == "0":
             print_success("프로그램을 종료합니다.")
             break
@@ -256,6 +269,7 @@ def add_prompt():
         "content": content,
         "category": category,
         "favorite": False,
+        "views": 0,
     })
     print_success(f"\n'{title}' 프롬프트가 추가되었습니다. (카테고리: {category})")
 
@@ -320,12 +334,14 @@ def show_detail():
         return
 
     prompt = prompts[index]
+    prompt["views"] += 1
     star = f"{COLOR_STAR}⭐ 즐겨찾기 됨{COLOR_RESET}" if prompt["favorite"] else "즐겨찾기 안 됨"
 
     print_section(f"{number}번 프롬프트 상세")
     print(f"{COLOR_TITLE}제목{COLOR_RESET}: {prompt['title']}")
     print(f"{COLOR_TITLE}카테고리{COLOR_RESET}: {COLOR_CATEGORY}{prompt['category']}{COLOR_RESET}")
     print(f"{COLOR_TITLE}즐겨찾기{COLOR_RESET}: {star}")
+    print(f"{COLOR_TITLE}조회수{COLOR_RESET}: {prompt['views']}회")
     print(f"{COLOR_TITLE}내용{COLOR_RESET}:")
     print_wrapped(prompt["content"])
 
@@ -419,6 +435,75 @@ def export_to_markdown():
     print_success(f"{len(exported_paths)}개 카테고리를 '{EXPORT_DIR}/' 폴더에 Markdown으로 내보냈습니다.")
     for path in exported_paths:
         print(f"  - {path}")
+
+
+# ===== 보너스: 수정/삭제(CRUD) & 조회수 =====
+
+def edit_prompt():
+    """번호를 입력받아 제목/내용/카테고리를 수정한다. 엔터만 누르면 기존 값을 유지한다."""
+    if not prompts:
+        print_error("등록된 프롬프트가 없습니다.")
+        return
+
+    number = input("수정할 프롬프트 번호: ").strip()
+    index = int(number) - 1 if number.isdigit() else -1
+
+    if not (0 <= index < len(prompts)):
+        print_error("잘못된 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    print_section(f"{number}번 프롬프트 수정 (엔터만 누르면 기존 값 유지)")
+
+    new_title = input(f"제목 (현재: {prompt['title']}): ").strip()
+    if new_title:
+        prompt["title"] = new_title
+
+    new_content = input("내용 (현재 내용 유지하려면 엔터): ").strip()
+    if new_content:
+        prompt["content"] = new_content
+
+    new_category = input(f"카테고리 (현재: {prompt['category']}): ").strip()
+    if new_category:
+        prompt["category"] = new_category
+
+    print_success(f"{number}번 프롬프트를 수정했습니다.")
+
+
+def delete_prompt():
+    """번호를 입력받아 확인 후 해당 프롬프트를 삭제한다."""
+    if not prompts:
+        print_error("등록된 프롬프트가 없습니다.")
+        return
+
+    number = input("삭제할 프롬프트 번호: ").strip()
+    index = int(number) - 1 if number.isdigit() else -1
+
+    if not (0 <= index < len(prompts)):
+        print_error("잘못된 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    confirm = input(f"'{prompt['title']}'을(를) 정말 삭제할까요? (y/N): ").strip().lower()
+    if confirm != "y":
+        print("삭제를 취소했습니다.")
+        return
+
+    prompts.pop(index)
+    print_success(f"{number}번 프롬프트를 삭제했습니다.")
+
+
+def show_top_viewed():
+    """조회수(views)가 높은 순으로 프롬프트를 정렬해 보여준다."""
+    if not prompts:
+        print_error("등록된 프롬프트가 없습니다.")
+        return
+
+    ranked = sorted(enumerate(prompts, start=1), key=lambda pair: pair[1]["views"], reverse=True)
+
+    print_section("조회수 Top 목록")
+    for i, prompt in ranked:
+        print(f"{format_item(i, prompt)} (조회 {prompt['views']}회)")
 
 
 if __name__ == "__main__":
